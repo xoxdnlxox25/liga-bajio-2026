@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Copa Liga Barrial 2026</title>
+  <title>Copa Liga Bajío Norte 2026</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -63,7 +63,6 @@ function App() {
       const dataP = await resP.json();
       const dataG = await resG.json();
 
-      // Procesar Tabla (9 columnas)
       if (dataT.values) {
         const rows = dataT.values.slice(1).filter(f => f[0]).map(fila => ({
           club: fila[0], pj: fila[1] || "0", pg: fila[2] || "0", pp: fila[3] || "0", 
@@ -72,14 +71,12 @@ function App() {
         setTabla(rows.sort((a, b) => Number(b.pts) - Number(a.pts) || Number(b.dg) - Number(a.dg)));
       }
 
-      // Procesar Partidos
       if (dataP.values) {
         setPartidos(dataP.values.slice(1).filter(f => f[0]).map(f => ({
           local: f[0], visitante: f[1], hora: f[2], lugar: f[3], fecha: f[4]
         })));
       }
 
-      // Procesar Goleadores (Nombre, Club, Goles)
       if (dataG.values) {
         setGoleadores(dataG.values.slice(1).filter(f => f[0]).map(f => ({
           nombre: f[0], club: f[1], goles: f[2]
@@ -101,7 +98,7 @@ function App() {
             </div>
             <div>
               <h1 className="text-2xl font-black text-white tracking-tighter uppercase font-sport italic">Bajío Norte</h1>
-              <p className="text-[10px] text-green-400 font-bold tracking-[0.2em] uppercase">Tournament 2026</p>
+              <p className="text-[10px] text-green-400 font-bold tracking-[0.2em] uppercase">Torneo apertura 2026</p>
             </div>
           </div>
           <nav className="flex gap-10 overflow-x-auto no-scrollbar">
@@ -118,7 +115,7 @@ function App() {
       <main className="flex-grow max-w-5xl mx-auto w-full p-4 md:p-8 fade-in">
         {tabActiva === "tabla" && (
           <div className="space-y-6">
-            <input type="text" placeholder="FILTRAR CLUB..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)}
+            <input type="text" placeholder="NOMBRE DE CLUB..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-xs font-bold tracking-widest text-white focus:outline-none focus:border-[#00ff88]/50" />
             <div className="table-container rounded-2xl overflow-hidden shadow-2xl">
               <div className="overflow-x-auto no-scrollbar">
@@ -164,28 +161,28 @@ function App() {
         )}
 
         {tabActiva === "partidos" && (
-          <div className="grid gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {partidos.map((p, i) => (
-              <div key={i} className="match-card rounded-2xl overflow-hidden group">
-                <div className="flex items-center justify-between p-6 sm:px-12 relative">
+              <div key={i} className="match-card rounded-xl overflow-hidden group">
+                <div className="flex items-center justify-between p-4 relative">
                   <div className="flex flex-col items-center flex-1">
-                    <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-green-500/50 mb-2">
-                      <span className="text-[10px] font-black text-white font-sport">{p.local?.substring(0,3).toUpperCase()}</span>
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-green-500/50 mb-1">
+                      <span className="text-[9px] font-black text-white font-sport">{p.local?.substring(0,3).toUpperCase()}</span>
                     </div>
-                    <span className="text-[10px] font-black text-white uppercase text-center">{p.local}</span>
+                    <span className="text-[9px] font-black text-white uppercase text-center leading-tight">{p.local}</span>
                   </div>
-                  <div className="match-vs-box px-4 py-1 italic mx-4"><span className="match-vs-text text-sm font-black">VS</span></div>
+                  <div className="match-vs-box px-3 py-0.5 italic mx-2"><span className="match-vs-text text-xs font-black">VS</span></div>
                   <div className="flex flex-col items-center flex-1">
-                    <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-green-500/50 mb-2">
-                      <span className="text-[10px] font-black text-white font-sport">{p.visitante?.substring(0,3).toUpperCase()}</span>
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-green-500/50 mb-1">
+                      <span className="text-[9px] font-black text-white font-sport">{p.visitante?.substring(0,3).toUpperCase()}</span>
                     </div>
-                    <span className="text-[10px] font-black text-white uppercase text-center">{p.visitante}</span>
+                    <span className="text-[9px] font-black text-white uppercase text-center leading-tight">{p.visitante}</span>
                   </div>
                 </div>
-                <div className="bg-white/5 py-3 px-6 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                <div className="bg-white/5 py-2 px-4 flex justify-between items-center text-[9px] font-bold uppercase tracking-tight text-slate-400">
                   <span>{p.fecha}</span>
                   <span className="text-[#00ff88] font-sport">{p.hora} HRS</span>
-                  <span>📍 {p.lugar}</span>
+                  <span className="truncate max-w-[80px]">📍 {p.lugar}</span>
                 </div>
               </div>
             ))}
@@ -222,3 +219,4 @@ root.render(<App />);
 </script>
 </body>
 </html>
+
