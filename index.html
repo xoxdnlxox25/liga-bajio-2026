@@ -55,7 +55,7 @@ function App() {
       const ts = new Date().getTime();
       const [resT, resP, resG] = await Promise.all([
         fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${TABLA_SHEET}!A:I?key=${API_KEY}&t=${ts}`),
-        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${PARTIDOS_SHEET}!A:E?key=${API_KEY}&t=${ts}`),
+        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${PARTIDOS_SHEET}!A:G?key=${API_KEY}&t=${ts}`),
         fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${GOLEADORES_SHEET}!A:C?key=${API_KEY}&t=${ts}`)
       ]);
 
@@ -73,7 +73,8 @@ function App() {
 
       if (dataP.values) {
         setPartidos(dataP.values.slice(1).filter(f => f[0]).map(f => ({
-          local: f[0], visitante: f[1], hora: f[2], lugar: f[3], fecha: f[4]
+          local: f[0], visitante: f[1], hora: f[2], lugar: f[3], fecha: f[4],
+          golesL: f[5], golesV: f[6]
         })));
       }
 
@@ -87,6 +88,16 @@ function App() {
   };
 
   useEffect(() => { fetchData(); }, []);
+
+  // Función para determinar el color del marcador
+  const getScoreColor = (golesPropio, golesRival) => {
+    if (!golesPropio || !golesRival || golesPropio === "-" || golesRival === "-") return "text-white border-white/20";
+    const gP = Number(golesPropio);
+    const gR = Number(golesRival);
+    if (gP > gR) return "text-green-400 border-green-500/50 shadow-[0_0_10px_rgba(74,222,128,0.2)]";
+    if (gP < gR) return "text-red-500 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
+    return "text-white border-white/20";
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -163,26 +174,36 @@ function App() {
         {tabActiva === "partidos" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {partidos.map((p, i) => (
-              <div key={i} className="match-card rounded-xl overflow-hidden group">
+              <div key={i} className="match-card rounded-xl overflow-hidden group border-white/5">
                 <div className="flex items-center justify-between p-4 relative">
+                  {/* Local */}
                   <div className="flex flex-col items-center flex-1">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-green-500/50 mb-1">
-                      <span className="text-[9px] font-black text-white font-sport">{p.local?.substring(0,3).toUpperCase()}</span>
+                    <span className="text-[14px] font-black text-white uppercase text-center leading-tight mb-2 h-10 flex items-center">{p.local}</span>
+                    <div className={`w-14 h-12 flex items-center justify-center rounded-lg text-2xl font-black font-sport bg-white/5 border ${getScoreColor(p.golesL, p.golesV)}`}>
+                      {p.golesL || "-"}
                     </div>
-                    <span className="text-[25px] font-black text-white uppercase text-center leading-tight">{p.local}</span>
                   </div>
-                  <div className="match-vs-box px-3 py-0.5 italic mx-2"><span className="match-vs-text text-xs font-black">VS</span></div>
-                  <div className="flex flex-col items-center flex-1">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-green-500/50 mb-1">
-                      <span className="text-[9px] font-black text-white font-sport">{p.visitante?.substring(0,3).toUpperCase()}</span>
+
+                  {/* VS */}
+                  <div className="flex flex-col items-center mx-3 pt-8">
+                    <div className="match-vs-box px-2 py-0.5 italic">
+                      <span className="match-vs-text text-[10px] font-black tracking-tighter">VS</span>
                     </div>
-                    <span className="text-[25px] font-black text-white uppercase text-center leading-tight">{p.visitante}</span>
+                  </div>
+
+                  {/* Visitante */}
+                  <div className="flex flex-col items-center flex-1">
+                    <span className="text-[14px] font-black text-white uppercase text-center leading-tight mb-2 h-10 flex items-center">{p.visitante}</span>
+                    <div className={`w-14 h-12 flex items-center justify-center rounded-lg text-2xl font-black font-sport bg-white/5 border ${getScoreColor(p.golesV, p.golesL)}`}>
+                      {p.golesV || "-"}
+                    </div>
                   </div>
                 </div>
-                <div className="bg-white/5 py-2 px-4 flex justify-between items-center text-[19px] font-bold uppercase tracking-tight text-slate-400">
-                  <span>{p.fecha}</span>
+
+                <div className="bg-black/20 py-2.5 px-4 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-500 border-t border-white/5">
+                  <span className="text-slate-400">{p.fecha}</span>
                   <span className="text-[#00ff88] font-sport">{p.hora} HRS</span>
-                  <span className="truncate max-w-[80px]">📍 {p.lugar}</span>
+                  <span className="truncate max-w-[100px]">📍 {p.lugar}</span>
                 </div>
               </div>
             ))}
@@ -219,4 +240,3 @@ root.render(<App />);
 </script>
 </body>
 </html>
-
