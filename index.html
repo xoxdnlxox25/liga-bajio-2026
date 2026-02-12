@@ -64,11 +64,20 @@ function App() {
       const dataG = await resG.json();
 
       if (dataT.values) {
+        // Mapeo corregido según el orden de columnas de tu imagen (A=Club, B=PJ, C=PG, D=PE, E=PP...)
+        // Eliminado el .sort() para mantener el orden de la base de datos
         const rows = dataT.values.slice(1).filter(f => f[0]).map(fila => ({
-          club: fila[0], pj: fila[1] || "0", pg: fila[2] || "0", pp: fila[3] || "0", 
-          pe: fila[4] || "0", gf: fila[5] || "0", gc: fila[6] || "0", dg: fila[7] || "0", pts: fila[8] || "0"
+          club: fila[0], 
+          pj: fila[1] || "0", 
+          pg: fila[2] || "0", 
+          pe: fila[3] || "0", // Ajustado según orden común en Sheets
+          pp: fila[4] || "0", 
+          gf: fila[5] || "0", 
+          gc: fila[6] || "0", 
+          dg: fila[7] || "0", 
+          pts: fila[8] || "0"
         }));
-        setTabla(rows.sort((a, b) => Number(b.pts) - Number(a.pts) || Number(b.dg) - Number(a.dg)));
+        setTabla(rows); 
       }
 
       if (dataP.values) {
@@ -79,9 +88,10 @@ function App() {
       }
 
       if (dataG.values) {
+        // Eliminado el .sort() para que aparezcan como los escribas en el Excel
         setGoleadores(dataG.values.slice(1).filter(f => f[0]).map(f => ({
           nombre: f[0], club: f[1], goles: f[2]
-        })).sort((a,b) => Number(b.goles) - Number(a.goles)));
+        })));
       }
 
     } catch (e) { console.error("Error cargando datos:", e); }
@@ -123,7 +133,6 @@ function App() {
       </header>
 
       <main className="flex-grow max-w-5xl mx-auto w-full p-4 md:p-8 fade-in">
-        {/* Input de búsqueda unificado */}
         {(tabActiva === "tabla" || tabActiva === "partidos") && (
           <div className="mb-6">
             <input 
@@ -249,3 +258,4 @@ root.render(<App />);
 </script>
 </body>
 </html>
+
